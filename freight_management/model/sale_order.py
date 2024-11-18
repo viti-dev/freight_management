@@ -1,5 +1,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError
+from datetime import datetime
+
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -8,15 +10,26 @@ class SaleOrder(models.Model):
         ('air', 'Air'),
         ('sea', 'Sea'),
         ('land', 'Land'),
-    ], string='Freight Type')
+    ], string='Freight Type', required=True)
 
-    cargo_weight = fields.Float(string='Cargo Weight (tons)', default=0.0)
+    cargo_weight = fields.Float(string='Cargo Weight (tons)', required=True)
 
     high_value = fields.Boolean(
         string='High Value',
         compute='_compute_high_value',
-        store=True
+        default=False,
     )
+
+    approval_id = fields.Many2one('freight.approval', string='Approval')
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('sent', 'Quotation Sent'),
+        ('approval_requested', 'Approval Requested'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+        ('sale', 'Sales Order'),
+        ('done', 'Locked'),
+    ], string='Status', default='draft')
 
     @api.constrains('cargo_weight')
     def _check_cargo_weight(self):
@@ -41,3 +54,58 @@ class SaleOrder(models.Model):
             if order.high_value and not order.approval_id:
                 raise UserError('High-value orders require approval before confirmation.')
         return super(SaleOrder, self).action_confirm()
+
+    def action_request_approval(self):
+        for order in self:
+            if not order.order_line:
+                raise UserError('There is no order line .')
+            if order.state != 'draft':
+                raise UserError('Approval request can only be made in draft state.')
+            approval_vals = {
+                'name': order.name,
+                'freight_order_id': order.id,
+                'state': 'approved',
+                'approved_by': False,
+            }
+            approval_record = self.env['freight.approval'].create(approval_vals)
+            order.approval_id = approval_record.id
+            order.state = 'approval_requested'
+            log_vals = {'user_id': self.env.user.id,
+                        'model_name': 'sale.order',
+                        'change_details': 'Order Approved',
+                        'record_id': order.id,
+                        'create_date': datetime.now(),
+                        }
+            self.env['freight.audit.log'].create(log_vals)
+
+        return True
+
+    def write(self, vals):
+        changes = []
+        if 'freight_type' in vals:
+            changes.append(f"Freight Type changed from {self.freight_type} to {vals['freight_type']}")
+        if 'cargo_weight' in vals:
+            changes.append(f"Cargo Weight changed from {self.cargo_weight} to {vals['cargo_weight']}")
+        if 'high_value' in vals:
+            changes.append(f"High Value status changed from {self.high_value} to {vals['high_value']}")
+
+        res = super(SaleOrder, self).write(vals)
+        if changes:
+            self.env['freight.audit.log'].create({
+                'action': 'Updated Freight Order',
+                'model_name': 'sale.order',
+                'record_id': self.id,
+                'change_details': '\n'.join(changes),
+            })
+        return res
+
+    def create(self, vals):
+        res = super(SaleOrder, self).create(vals)
+        self.env['freight.audit.log'].create({
+            'action': 'Created Freight Order',
+            'model_name': 'sale.order',
+            'record_id': res.id,
+            'change_details': 'Freight order created.',
+        })
+        return res
+

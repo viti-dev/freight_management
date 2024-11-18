@@ -1,23 +1,26 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="view_order_form" model="ir.ui.view">
-        <field name="name">sale.order.form</field>
+    <record id="view_order_form_inherit_freight" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.freight</field>
         <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            <form string="Sales Order">
-                <header>
-                    <button name="action_confirm" type="object" string="Confirm" states="draft, sent" class="oe_highlight"/>
-                    <button name="request_approval" type="object" string="Request Approval" states="draft" class="oe_highlight"/>
-                </header>
-                <sheet>
-                    <group>
-                        <field name="freight_type"/>
-                        <field name="cargo_weight"/>
-                        <field name="high_value"/>
-                        <field name="approval_id"/>
-                    </group>
-                </sheet>
-            </form>
+            <xpath expr="//button[@name='action_confirm']" position="before">
+                <button name="action_request_approval"
+                        string="Request Approval"
+                        type="object"
+                        class="btn-primary"
+                        groups="freight_management.group_freight_manager"
+                        invisible="not high_value"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <group>
+                    <field name="freight_type"/>
+                    <field name="cargo_weight"/>
+                    <field name="high_value" readonly="1"/>
+                    <field name="approval_id" invisible="1"/>
+                </group>
+            </xpath>
         </field>
     </record>
 </odoo>

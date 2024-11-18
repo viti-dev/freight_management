@@ -9,13 +9,5 @@
             <field name="name">Freight Staff</field>
         </record>
 
-        <record id="ir_rule_freight_approval" model="ir.model.access">
-            <field name="name">Freight Approval Access</field>
-            <field name="model_id" ref="model_freight_approval"/>
-            <field name="group_id" ref="group_freight_manager"/>
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-        </record>
-
     </data>
 </odoo>
