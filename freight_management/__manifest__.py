@@ -1,0 +1,22 @@
+{
+    'name': 'Freight Management',
+    'version': '17.0.1.0.1',
+    'category': 'Sales',
+    'summary': 'Manage freight orders, approvals, and reporting',
+    'author': 'Vikash Tiwari',
+    'maintainer': 'Vikash tiwari',
+    'depends': ['sale', 'report'],
+    'data': [
+        'security/freight_security.xml',
+        'security/ir.model.access.csv',
+        'views/sale_order_view.xml',
+        'views/freight_approval_view.xml',
+        'views/report_freight_report.xml',
+        'data/freight_data.xml',
+    ],
+    'images': [],
+    'license': 'AGPL-3',
+    'installable': True,
+    'auto_install': False,
+    'application': True,
+}

@@ -1,4 +1,4 @@
-# freight_manageme# Freight Management Module
+# Freight Management Module
 
 ## Setup
 1. Install this module into your Odoo instance.
@@ -14,4 +14,3 @@
 ## Security Configurations
 - `Freight Managers` have full access to freight orders and approvals.
 - `Freight Staff` can only create orders and cannot approve high-value orders.
-nt
