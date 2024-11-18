@@ -19,6 +19,7 @@ class FreightReport(models.TransientModel):
 
     def action_print_excel(self):
         workbook = xlwt.Workbook(encoding="UTF-8")
+
         filename = 'Freight_Report'
         filename = filename + '.xls'
 
@@ -26,22 +27,28 @@ class FreightReport(models.TransientModel):
 
         row_index = 0
         column_index = 0
-
-        sheet1.write(row_index, column_index, 'Name')
-        sheet1.write(row_index, column_index + 1, 'Amount')
+        style_title_value = xlwt.easyxf('font:height 200; align: horiz center; font: color black; font:bold True;borders: top_color black, bottom_color black, right_color black, left_color black,\
+                        left thin, right thin, top thin, bottom thin;')
+        sheet1.write(row_index, column_index, 'Sale Order', style_title_value)
+        sheet1.write(row_index, column_index + 1, 'High Value Orders', style_title_value)
+        sheet1.write(row_index, column_index + 2, 'Total Revenue', style_title_value)
 
 
         sheet1.col(1).width = 4000
         sheet1.col(0).width = 10000
         row_index += 1
 
-        for type in self.generate_report():
-            sheet1.write_merge(row_index, row_index, column_index, column_index+ 1, type)
-            row_index+=1
-            for x in self.generate_report()[type]:
+        bold_center_style = xlwt.easyxf('font: bold 1; alignment: horizontal center')
+        right_align_style = xlwt.easyxf('alignment: horizontal right')
+        report_data = self.generate_report()
+        for report_type, data in report_data.items():
+            sheet1.write_merge(row_index, row_index, column_index, column_index + 1, report_type, bold_center_style)
+            row_index += 1
+            for x in data:
                 sheet1.write(row_index, column_index, x['name'] or '')
-                sheet1.write(row_index, column_index + 1, x['amount_total'] or 0)
-                row_index+=1
+                sheet1.write(row_index, column_index + 1, x['high_value'] or 0, right_align_style)
+                sheet1.write(row_index, column_index + 2, x['amount_total'] or 0, right_align_style)
+                row_index += 1
 
         fp = io.BytesIO()
         workbook.save(fp)
@@ -70,15 +77,9 @@ class FreightReport(models.TransientModel):
         data_dict = {}
         for order in orders:
             if order.freight_type:
-                vals = {'name': order.name, 'amount_total': order.amount_total}
+                vals = {'name': order.name, 'high_value': order.high_value if order.high_value else 'False', 'amount_total': order.amount_total}
                 if order.freight_type in data_dict:
-                    # Append the order details to the list of orders for this freight type
                     data_dict[order.freight_type].append(vals)
                 else:
-                    # Initialize the dictionary with a list containing this order's details
                     data_dict[order.freight_type] = [vals]
-
-                # report_data[order.freight_type]['orders'].append(order.name)
-                # report_data[order.freight_type]['total_revenue'] += order.amount_total
-        print(data_dict,'===================')
         return data_dict

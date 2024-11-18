@@ -10,6 +10,7 @@
         'security/freight_security.xml',
         'security/ir.model.access.csv',
         'views/sale_order_views.xml',
+        'wizard/freight_wizard_report_views.xml',
         'report/freight_report_templates.xml',
         'views/freight_approval.xml',
         'views/freight_audit_logg.xml',

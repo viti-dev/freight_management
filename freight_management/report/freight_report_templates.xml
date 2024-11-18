@@ -26,23 +26,27 @@
                             <thead>
                                 <tr>
                                     <th>Sale Order</th>
-<!--                                    <th>Customer Name</th>-->
-<!--                                    <th>Freight Type</th>-->
-<!--                                    <th>High Value Orders</th>-->
+                                    <th>High Value Orders</th>
                                     <th>Total Revenue</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <t t-foreach="doc.generate_report()" t-as="data">
                                     <tr>
-                                        <td colspan="2">
-                                            <t t-esc="data"/>
+                                        <td colspan="2" style="text-align: center; font-weight: bold;">
+                                            <h1>
+                                                Categorized by Freight Type:
+                                                <t t-esc="data"/>
+                                            </h1>
                                         </td>
                                     </tr>
                                     <t t-foreach="doc.generate_report()[data]" t-as="x">
                                         <tr>
                                             <td>
                                                 <t t-esc="x['name']"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="x['high_value']"/>
                                             </td>
                                             <td>
                                                 <t t-esc="x['amount_total']"/>
