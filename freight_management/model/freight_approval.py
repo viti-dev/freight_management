@@ -31,7 +31,7 @@ class FreightApproval(models.Model):
         res = super(FreightApproval, self).write(vals)
         if changes:
             self.env['freight.audit.log'].create({
-                'action': 'Approval Updated',
+                'action': 'Freight Approval Updated',
                 'model_name': 'freight.approval',
                 'record_id': self.id,
                 'change_details': '\n'.join(changes),

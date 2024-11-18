@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="freight_report_wizard" model="ir.ui.view">
+        <field name="name">fright report</field>
+        <field name="model">freight.report</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="freight_type"/>
+                    </group>
+                    <group>
+                        <field name="high_value"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_print_pdf" string="Print PDF" class="btn-primary" type="object"/>
+                    <button name="action_print_excel" string="Print Excel" class="btn-primary" type="object"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="freight_report_wizard_action" model="ir.actions.act_window">
+        <field name="name">Freight Report</field>
+        <field name="res_model">freight.report</field>
+        <field name="view_id" ref="freight_report_wizard"/>
+        <field name="target">new</field>
+    </record>
+</odoo>
