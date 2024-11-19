@@ -24,7 +24,7 @@ class SaleOrder(models.Model):
     state = fields.Selection([
         ('draft', 'Draft'),
         ('sent', 'Quotation Sent'),
-        ('approval_requested', 'Approval Requested'),
+        ('approval_requested', 'Waiting Approval'),
         ('approved', 'Approved'),
         ('rejected', 'Rejected'),
         ('sale', 'Sales Order'),
@@ -59,25 +59,26 @@ class SaleOrder(models.Model):
         for order in self:
             if not order.order_line:
                 raise UserError('There is no order line .')
-            if order.state != 'draft':
-                raise UserError('Approval request can only be made in draft state.')
-            approval_vals = {
+            if order.state != 'draft' and order.state != 'sent':
+                raise UserError('Approval request can only be made in draft state or Quotation Sent.')
+            """Send a request for approval to admin"""
+            approval_record = self.env['freight.approval'].create({
                 'name': order.name,
-                'freight_order_id': order.id,
-                'state': 'approved',
-                'approved_by': False,
-            }
-            approval_record = self.env['freight.approval'].create(approval_vals)
+                'freight_order_id': self.id,
+                'state': 'pending',
+                'requested_by': self.env.user.id,
+                'approved_by': False
+            })
+            self.write({'state': 'approval_requested', 'approval_id': approval_record.id})
             order.approval_id = approval_record.id
             order.state = 'approval_requested'
             log_vals = {'user_id': self.env.user.id,
                         'model_name': 'sale.order',
-                        'change_details': 'Order Approved',
+                        'change_details': 'Order Approval Requested',
                         'record_id': order.id,
                         'create_date': datetime.now(),
                         }
             self.env['freight.audit.log'].create(log_vals)
-
         return True
 
     def write(self, vals):

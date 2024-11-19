@@ -5,13 +5,16 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_confirm']" position="attributes">
+                <attribute name="invisible">state != 'approved' or not high_value</attribute>
+            </xpath>
             <xpath expr="//button[@name='action_confirm']" position="before">
                 <button name="action_request_approval"
                         string="Request Approval"
                         type="object"
                         class="btn-primary"
                         groups="freight_management.group_freight_manager"
-                        invisible="not high_value"/>
+                        invisible="not high_value or state in ('approval_requested', 'approved', 'rejected')"/>
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="after">
                 <group>

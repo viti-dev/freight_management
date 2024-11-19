@@ -23,11 +23,13 @@
                         string="Approve"
                         type="object"
                         class="btn-primary"
+                        invisible="state in ('approved')"
                         groups="freight_management.group_freight_manager"/>
                     <button name="reject"
                         string="Reject"
                         type="object"
                         class="btn-primary"
+                        invisible="state in ('rejected')"
                         groups="freight_management.group_freight_manager"/>
                         <field name="state" readonly="1" widget="statusbar"/>
                 </header>
@@ -38,6 +40,7 @@
                         <field name="freight_order_id"/>
                     </group>
                     <group>
+                        <field name="requested_by"/>
                         <field name="approved_by"/>
                         <field name="approval_date" readonly="1"/>
                     </group>

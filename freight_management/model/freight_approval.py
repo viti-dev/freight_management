@@ -4,15 +4,16 @@ class FreightApproval(models.Model):
     _name = 'freight.approval'
     _description = 'Freight Approval'
 
-    name = fields.Char(string="Approval Reference", required=True)
+    name = fields.Char(string="Approval Reference", required=True, readonly=True)
     freight_order_id = fields.Many2one('sale.order', string="Freight Order", required=True)
     approved_by = fields.Many2one('res.users', string="Approved By", readonly=True)
+    requested_by = fields.Many2one('res.users', string="Requested By", readonly=True)
     state = fields.Selection([
         ('pending', 'Pending'),
         ('approved', 'Approved'),
         ('rejected', 'Rejected')
-    ], string="Status", default='pending')
-    approval_date = fields.Datetime(string='Approval Date', default=fields.Datetime.now)
+    ], string="Status", default='pending', readonly=True)
+    approval_date = fields.Datetime(string='Approval Date', default=fields.Datetime.now, readonly=True)
 
     def approve(self):
         self.write({'state': 'approved', 'approved_by': self.env.user})
