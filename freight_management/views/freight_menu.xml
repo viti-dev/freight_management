@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-        <!--Menu for Reports-->
 
+        <!--Menu for freight service-->
+    <menuitem id="menu_freight_management" name="Freight" sequence="10"/>
+    <menuitem id="menu_freight_operations" name="Operations" parent="menu_freight_management" sequence="20"/>
+    <menuitem id="menu_freight_approvals" name="Freight Approvals" parent="menu_freight_operations" sequence="30" action="action_freight_approval"/>
+
+            <!--Menu for Reports-->
     <menuitem id="menu_freight_reporting" name="Reporting" parent="menu_freight_management" sequence="50"/>
     <menuitem id="menu_freight_report" name="Freight Report" parent="menu_freight_reporting" action="freight_report_wizard_action"/>
 
         <!--Menu for Audit Logs-->
     <menuitem id="menu_freight_audit_logs" name="Audit Logs" parent="menu_freight_management" sequence="40" action="action_freight_audit_log"/>
 
-        <!--Menu for freight service-->
-    <menuitem id="menu_freight_management" name="Freight" sequence="10"/>
-    <menuitem id="menu_freight_operations" name="Operations" parent="menu_freight_management" sequence="20"/>
-    <menuitem id="menu_freight_approvals" name="Freight Approvals" parent="menu_freight_operations" sequence="30" action="action_freight_approval"/>
-    
 </odoo>
